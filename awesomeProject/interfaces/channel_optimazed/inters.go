@@ -2,44 +2,83 @@ package main
 
 import "fmt"
 
-type animal interface {
-	makeSound()
+type payer interface {
+	pay(a int) error
 }
 
-type cat struct {
-}
-type dog struct {
-}
-
-func (c *cat) makeSound() {
-	fmt.Println("meow")
-}
-func (d *dog) makeSound() {
-	fmt.Println("wow")
+type Card struct {
+	number int
+	money  int
 }
 
+func (c *Card) pay(a int) error {
+	if a < c.money {
+		c.money -= a
+		return nil
+	} else {
+		return fmt.Errorf("недостаточно средств на карте")
+	}
+}
+
+type Cash struct {
+	money int
+}
+
+func (c *Cash) pay(a int) error {
+	if a < c.money {
+		c.money -= a
+		return nil
+	} else {
+		return fmt.Errorf("недостаточно средств")
+	}
+}
+
+type PhonePay struct {
+	phone string
+	money int
+}
+
+func (c *PhonePay) pay(a int) error {
+	if a < c.money {
+		c.money -= a
+		return nil
+	} else {
+		return fmt.Errorf("недостаточно средств на телефоне")
+	}
+}
+
+func buy(p payer) {
+	switch p.(type) {
+	case *Card:
+		if p.pay(100) == nil {
+			fmt.Println("Покупка успешна,спинано 100р")
+		} else {
+			fmt.Println(p.pay(100))
+		}
+	case *Cash:
+		if p.pay(100) == nil {
+			fmt.Println("Покупка успешна,принятно 100р")
+		} else {
+			fmt.Println(p.pay(100))
+		}
+
+	case *PhonePay:
+		if p.pay(100) == nil {
+			fmt.Println("Покупка успешна,с телефона спинано 100р")
+		} else {
+			fmt.Println(p.pay(100))
+		}
+
+	default:
+
+	}
+}
 func main() {
-	var c, d animal = &cat{}, &dog{}
-	c.makeSound()
-	d.makeSound()
-	SayHello(&russian{}, "Дима")
-	SayHello(&american{}, "Daniel")
-}
-
-type greeter interface {
-	greet(string) string
-}
-
-type russian struct{}
-type american struct{}
-
-func (g *russian) greet(name string) string {
-	return fmt.Sprintf("привет,%s", name)
-}
-func (g *american) greet(name string) string {
-	return fmt.Sprintf("hello,%s", name)
-}
-
-func SayHello(v greeter, name string) {
-	fmt.Println(v.greet(name))
+	var person payer
+	person = &Card{200, 530}
+	buy(person)
+	person = &Cash{800}
+	buy(person)
+	person = &PhonePay{"93485394573", 530}
+	buy(person)
 }
