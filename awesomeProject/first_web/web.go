@@ -1,39 +1,39 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
+	"html/template"
+	"net/http"
 )
 
-type Person struct {
-	Name string
-	Age  int
+type user struct {
+	Name                  string
+	Age                   uint16
+	Money                 int16
+	Avg_grades, Happiness float64
 }
 
 func main() {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Введите количество людей: ")
-	countStr, _ := reader.ReadString('\n')
-	count, _ := strconv.Atoi(strings.TrimSpace(countStr))
-
-	people := make([]Person, count)
-	for i := 0; i < count; i++ {
-		fmt.Printf("Введите имя и возраст человека %d (формат: имя возраст): ", i+1)
-		input, _ := reader.ReadString('\n')
-		parts := strings.Fields(input)
-		people[i] = Person{Name: parts[0], Age: atoi(parts[1])}
-	}
-
-	fmt.Println("Введенные люди:")
-	for _, person := range people {
-		fmt.Printf("Имя: %s, Возраст: %d\n", person.Name, person.Age)
-	}
+	http.HandleFunc("/bro", bro_page)
+	http.HandleFunc("/pages", home_page)
+	http.ListenAndServe(":8080", nil)
 }
 
-func atoi(s string) int {
-	num, _ := strconv.Atoi(s)
-	return num
+//func (u user) GetAllInfo() string {
+//	return
+//}
+
+func home_page(w http.ResponseWriter, r *http.Request) {
+	lev := &user{"lev", 19, 24000, 1.43, 1.1}
+	fmt.Fprintf(w, "username:%s\nold:%d\nbalance:%d dollars\ngrades:%f\nhapiness:%f", lev.Name, lev.Age, lev.Money, lev.Avg_grades, lev.Happiness)
+}
+
+func bro_page(w http.ResponseWriter, r *http.Request) {
+	lev := user{"lev", 19, 24000, 1.43, 1.1}
+	templ, err := template.ParseFiles("templates/Site.html")
+	if err != nil {
+		http.Error(w, "Template error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	templ.Execute(w, lev)
 }
