@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSON Example</title>
+    <script>
+        window.onload = function() {
+            fetch('http://localhost:8080/test')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('Name').textContent = data.Name;
+                })
+                //.catch(error => console.error('Error:', error));
+            //document.write(data);
+        };
+    </script>
+</head>
+<body>
+<h1 id="message"></h1>
+</body>
+</html>
