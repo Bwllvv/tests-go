@@ -105,7 +105,7 @@ func main() {
 	var person motions
 	var flags []int
 	var shoot [][]int
-	person = &noob{80 / 2, 10 / 2, "Stive", 10000}
+	person = &noob{80 / 2, 10 / 2, "Stive", 100}
 	pers := 0
 	shooting := 0
 	killing := 0
